@@ -12,7 +12,7 @@ from src.s3_client import S3Client
 from src.rabbitmq_client import RabbitMQClient
 from src.file_client import FileClient
 from src.converter import ProtobufConverter
-from src.Protobuf.Message_pb2 import ClipStatus, Clip, ApiMessage
+from src.Protobuf.Message_pb2 import ClipStatus, Clip, SoundExtractorMessage
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -95,10 +95,10 @@ def process_message(message):
             ClipStatus.SOUND_EXTRACTOR_COMPLETE
         )
 
-        protobuf = ApiMessage()
+        protobuf = SoundExtractorMessage()
         protobuf.clip.CopyFrom(clip)
 
-        rmq_client.send_message(protobuf, "App\\Protobuf\\ApiMessage")
+        rmq_client.send_message(protobuf, "App\\Protobuf\\SoundExtractorMessage")
 
         return True
     except Exception:
@@ -106,10 +106,10 @@ def process_message(message):
             ClipStatus.SOUND_EXTRACTOR_ERROR
         )
 
-        protobuf = ApiMessage()
+        protobuf = SoundExtractorMessage()
         protobuf.clip.CopyFrom(clip)
 
-        if not rmq_client.send_message(protobuf, "App\\Protobuf\\ApiMessage"):
+        if not rmq_client.send_message(protobuf, "App\\Protobuf\\SoundExtractorMessage"):
             return False
 
 def extract_sound(file: str, audioFilePath: str) -> bool:
