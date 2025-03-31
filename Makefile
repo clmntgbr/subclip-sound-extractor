@@ -10,5 +10,5 @@ CONTAINER_SE := $(shell docker container ls -f "name=$(ROOT_PROJECT_NAME)-sound-
 SE := docker exec -ti $(CONTAINER_SE)
 
 fix:
-	$(SE) ruff check --fix --exclude src/Protobuf
+	$(SE) ruff check --fix --exclude src/Protobuf --unsafe-fixes
 	$(SE) black src --exclude "src/Protobuf"

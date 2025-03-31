@@ -45,7 +45,7 @@ def process_message(message):
 
     try:
         id = clip.id
-        type = os.path.splitext(clip.originalVideo.name)[1]
+        os.path.splitext(clip.originalVideo.name)[1]
 
         s3Key = f"{clip.userId}/{clip.id}/{clip.originalVideo.name}"
         keyFrame = f"{clip.userId}/{clip.id}/{id}.jpg"
@@ -72,16 +72,14 @@ def process_message(message):
         chunks = chunk_wav(audioFilePath, id)
 
         for chunk in chunks:
-            key = (
-                f"{clip.userId}/{clip.id}/audios/{chunk}"
-            )
+            key = f"{clip.userId}/{clip.id}/audios/{chunk}"
             if not s3_client.upload_file(f"/tmp/{chunk}", key):
                 return False
             file_client.delete_file(f"/tmp/{chunk}")
 
         if not s3_client.upload_file(tmpFramePath, keyFrame):
             return False
-        
+
         file_client.delete_file(tmpAudioFilePath)
         file_client.delete_file(tmpFilePath)
         file_client.delete_file(tmpFramePath)
@@ -91,9 +89,7 @@ def process_message(message):
         clip.cover = f"{id}.jpg"
         clip.originalVideo.length = int(duration)
         clip.originalVideo.audios.extend(resultsSorted)
-        clip.status = ClipStatus.Name(
-            ClipStatus.SOUND_EXTRACTOR_COMPLETE
-        )
+        clip.status = ClipStatus.Name(ClipStatus.SOUND_EXTRACTOR_COMPLETE)
 
         protobuf = SoundExtractorMessage()
         protobuf.clip.CopyFrom(clip)
@@ -102,15 +98,16 @@ def process_message(message):
 
         return True
     except Exception:
-        clip.status = ClipStatus.Name(
-            ClipStatus.SOUND_EXTRACTOR_ERROR
-        )
+        clip.status = ClipStatus.Name(ClipStatus.SOUND_EXTRACTOR_ERROR)
 
         protobuf = SoundExtractorMessage()
         protobuf.clip.CopyFrom(clip)
 
-        if not rmq_client.send_message(protobuf, "App\\Protobuf\\SoundExtractorMessage"):
+        if not rmq_client.send_message(
+            protobuf, "App\\Protobuf\\SoundExtractorMessage"
+        ):
             return False
+
 
 def extract_sound(file: str, audioFilePath: str) -> bool:
     try:
@@ -126,7 +123,9 @@ def extract_cover(file: str, tmpFramePath: str, duration: float) -> bool:
     try:
         middle_time = duration / 2
         time_str = f"{int(middle_time // 3600):02}:{int((middle_time % 3600) // 60):02}:{int(middle_time % 60):02}"
-        ffmpeg.input(file, ss=time_str).output(tmpFramePath, vframes=1, pix_fmt='yuv420p', format='image2', update='1').run()
+        ffmpeg.input(file, ss=time_str).output(
+            tmpFramePath, vframes=1, pix_fmt="yuv420p", format="image2", update="1"
+        ).run()
         return True
     except Exception as e:
         print(f"error extracting cover: {e}")

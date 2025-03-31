@@ -15,7 +15,7 @@ class ProtobufConverter:
 
         if "cover" in clip_data:
             clip.cover = clip_data["cover"]
-        
+
         video = Video()
         video.id = clip_data["originalVideo"]["id"]
         video.name = clip_data["originalVideo"]["name"]
