@@ -62,10 +62,10 @@ def process_message(message):
         duration = float(probe["format"]["duration"])
 
         if not extract_sound(tmpFilePath, tmpAudioFilePath):
-            return False
+            raise Exception()
 
         if not extract_cover(tmpFilePath, tmpFramePath, duration):
-            return False
+            raise Exception()
 
         audioFilePath = convert_to_wav(tmpAudioFilePath)
 
@@ -74,11 +74,11 @@ def process_message(message):
         for chunk in chunks:
             key = f"{clip.userId}/{clip.id}/audios/{chunk}"
             if not s3_client.upload_file(f"/tmp/{chunk}", key):
-                return False
+                raise Exception()
             file_client.delete_file(f"/tmp/{chunk}")
 
         if not s3_client.upload_file(tmpFramePath, keyFrame):
-            return False
+            raise Exception()
 
         file_client.delete_file(tmpAudioFilePath)
         file_client.delete_file(tmpFilePath)
