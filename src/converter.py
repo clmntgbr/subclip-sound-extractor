@@ -41,25 +41,42 @@ class ProtobufConverter:
         video.IsInitialized()
         clip.originalVideo.CopyFrom(video)
 
+        if "processedVideo" in clip_data:
+            processed_video = Video()
+            processed_video.id = clip_data["originalVideo"]["id"]
+            processed_video.name = clip_data["originalVideo"]["name"]
+            processed_video.mimeType = clip_data["originalVideo"]["mimeType"]
+            processed_video.size = int(clip_data["originalVideo"]["size"])
+
+            if "length" in clip_data["originalVideo"]:
+                processed_video.length = int(clip_data["originalVideo"]["length"])
+
+            if "audios" in clip_data["originalVideo"]:
+                processed_video.audios.extend(clip_data["originalVideo"]["audios"])
+
+            if "subtitles" in clip_data["originalVideo"]:
+                processed_video.subtitles.extend(clip_data["originalVideo"]["subtitles"])
+
+            if "ass" in clip_data["originalVideo"]:
+                processed_video.ass = clip_data["originalVideo"]["ass"]
+
+            if "subtitle" in clip_data["originalVideo"]:
+                processed_video.subtitle = clip_data["originalVideo"]["subtitle"]
+            
+            processed_video.IsInitialized()
+            clip.processedVideo.CopyFrom(processed_video)
+
         configuration = Configuration()
         configuration.subtitleFont = clip_data["configuration"]["subtitleFont"]
         configuration.subtitleSize = int(clip_data["configuration"]["subtitleSize"])
         configuration.subtitleColor = clip_data["configuration"]["subtitleColor"]
         configuration.subtitleBold = clip_data["configuration"]["subtitleBold"]
         configuration.subtitleItalic = clip_data["configuration"]["subtitleItalic"]
-        configuration.subtitleUnderline = clip_data["configuration"][
-            "subtitleUnderline"
-        ]
-        configuration.subtitleOutlineColor = clip_data["configuration"][
-            "subtitleOutlineColor"
-        ]
-        configuration.subtitleOutlineThickness = int(
-            clip_data["configuration"]["subtitleOutlineThickness"]
-        )
+        configuration.subtitleUnderline = clip_data["configuration"]["subtitleUnderline"]
+        configuration.subtitleOutlineColor = clip_data["configuration"]["subtitleOutlineColor"]
+        configuration.subtitleOutlineThickness = int(clip_data["configuration"]["subtitleOutlineThickness"])
         configuration.subtitleShadow = int(clip_data["configuration"]["subtitleShadow"])
-        configuration.subtitleShadowColor = clip_data["configuration"][
-            "subtitleShadowColor"
-        ]
+        configuration.subtitleShadowColor = clip_data["configuration"]["subtitleShadowColor"]
         configuration.format = clip_data["configuration"]["format"]
         configuration.split = int(clip_data["configuration"]["split"])
 

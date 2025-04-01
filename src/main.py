@@ -45,7 +45,6 @@ def process_message(message):
 
     try:
         id = clip.id
-        os.path.splitext(clip.originalVideo.name)[1]
 
         s3Key = f"{clip.userId}/{clip.id}/{clip.originalVideo.name}"
         keyFrame = f"{clip.userId}/{clip.id}/{id}.jpg"
